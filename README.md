@@ -487,7 +487,7 @@ Class_Private_Example.ts:9:37 - error TS2341: Property 'name' is private and onl
 Found 2 errors in the same file, starting at: Class_Private_Example.ts:9
 ```
 
-- Understanding protected
+- **`Understanding protected`**
 
   - The protected modifier acts much like the private modifier with the exception that members declared protected can also be accessed within deriving classes. For example,
 ```ts
@@ -570,7 +570,7 @@ Class_Protected_Example_1.ts:24:11 - error TS2674: Constructor of class 'Person'
 Found 2 errors in the same file, starting at: Class_Protected_Example_1.ts:23
 ```
 
-- Readonly modifier
+- **`Readonly modifier`**
 
   - You can make properties readonly by using the readonly keyword. Readonly properties must be initialized at their declaration or in the constructor.
 ```ts
@@ -597,7 +597,7 @@ Class_Readonly_Example.ts:12:5 - error TS2540: Cannot assign to 'name' because i
 Found 1 error in Class_Readonly_Example.ts:12
 ```
 
-- Parameter properties
+- **`Parameter properties`**
 
   - In our last example, we had to declare a readonly member name and a constructor parameter theName in the Octopus class. This is needed in order to have the value of theName accessible after the Octopus constructor is executed. Parameter properties let you create and initialize a member in one place. Here’s a further revision of the previous Octopus class using a parameter property:
 ```ts
@@ -624,7 +624,7 @@ Class_Parameter_Example.ts:9:5 - error TS2339: Property 'name' does not exist on
 Found 2 errors in the same file, starting at: Class_Parameter_Example.ts:8
 ```
 
-- Accessors
+- **`Accessors`**
   
   - TypeScript supports getters/setters as a way of intercepting accesses to a member of an object. This gives you a way of having finer-grained control over how a member is accessed on each object.
   - Let’s convert a simple class to use get and set. First, let’s start with an example without getters and setters.
@@ -684,7 +684,7 @@ if (employee.fullName) {
 Bob
 ```
 
-- Static Properties
+- **`Static Properties`**
   
   - Up to this point, we’ve only talked about the instance members of the class, those that show up on the object when it’s instantiated. We can also create static members of a class, those that are visible on the class itself rather than on the instances. In this example, we use static on the origin, as it’s a general value for all grids. Each instance accesses this value through prepending the name of the class. Similarly to prepending this. in front of instance accesses, here we prepend Grid. in front of static accesses.
 ```ts
@@ -712,7 +712,7 @@ console.log(grid2.calculateDistanceFromOrigin({ x: 10, y: 10 }));
 2.8284271247461903
 ```
 
-- Abstract Classes
+- **`Abstract Classes`** 
 
   - Methods within an abstract class that are marked as abstract do not contain an implementation and must be implemented in derived classes. Abstract methods share a similar syntax to interface methods. Both define the signature of a method without including a method body. However, abstract methods must include the abstract keyword and may optionally include access modifiers.
 ```ts
@@ -752,4 +752,72 @@ department.printMeeting();
 (base) rocks-Air:simple_typescript_examples rock$ node Class_Abstract_Example.js
 Department name: Accounting and Auditing
 The Accounting Department meets each Monday at 10am.
+```
+
+- **`Advanced Techniques`**
+
+  - Constructor functions
+
+    - When you declare a class in TypeScript, you are actually creating multiple declarations at the same time. The first is the type of the instance of the class.
+    - In this example, greeter1 works similarly to before. We instantiate the Greeter class, and use this object. This we have seen before.
+    - Next, we then use the class directly. Here we create a new variable called greeterMaker. This variable will hold the class itself, or said another way its constructor function. Here we use typeof Greeter, that is “give me the type of the Greeter class itself” rather than the instance type. Or, more precisely, “give me the type of the symbol called Greeter,” which is the type of the constructor function. This type will contain all of the static members of Greeter along with the constructor that creates instances of the Greeter class. We show this by using new on greeterMaker, creating new instances of Greeter and invoking them as before. It is also good to mention that changing static property is frowned upon, here greeter3 has "Hey there!" instead of "Hello, there" on standardGreeting.
+
+```ts
+class Greeter {
+  static standardGreeting = "Hello, there";
+  greeting: string;
+  greet() {
+    if (this.greeting) {
+      return "Hello, " + this.greeting;
+    } else {
+      return Greeter.standardGreeting;
+    }
+  }
+}
+ 
+let greeter1: Greeter;
+greeter1 = new Greeter();
+console.log(greeter1.greet()); // "Hello, there"
+ 
+let greeterMaker: typeof Greeter = Greeter;
+greeterMaker.standardGreeting = "Hey there!";
+ 
+let greeter2: Greeter = new greeterMaker();
+console.log(greeter2.greet()); // "Hey there!"
+ 
+let greeter3: Greeter;
+greeter3 = new Greeter();
+console.log(greeter3.greet()); // "Hey there!"
+```
+```sh
+(base) rocks-Air:simple_typescript_examples rock$ tsc Class_Constructor_Funcation_Example.ts
+(base) rocks-Air:simple_typescript_examples rock$ node Class_Constructor_Funcation_Example.js
+Hello, there
+Hey there!
+Hey there!
+```
+
+- **`Using a class as an interface`**
+
+```ts
+class Point {
+    x: number;
+    y: number;
+}
+
+interface Point3d extends Point {
+    z: number;
+}
+
+let point3d: Point3d = { x: 1, y: 2, z: 3 };
+console.log(point3d.x);
+console.log(point3d.y);
+console.log(point3d.z);
+```
+```sh
+(base) rocks-Air:simple_typescript_examples rock$ tsc Class_Interface_Example.ts 
+(base) rocks-Air:simple_typescript_examples rock$ node Class_Interface_Example.js
+1
+2
+3
 ```
