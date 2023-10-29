@@ -821,3 +821,157 @@ console.log(point3d.z);
 2
 3
 ```
+
+- **`Decorators`**
+- https://www.typescriptlang.org/docs/handbook/decorators.html#decorators
+- https://hackernoon.com/using-decorators-in-typescript
+- https://fireship.io/lessons/ts-decorators-by-example/
+
+```sh
+(base) rocks-MacBook-Air:simple_typescript_examples rock$ tsc --target ES5 --experimentalDecorators
+Version 5.2.2
+tsc: The TypeScript Compiler - Version 5.2.2 
+```
+
+- Create tsconfig.json file like below
+```json
+{
+    "compilerOptions": {
+      "target": "ES5",
+      "experimentalDecorators": true
+    }
+  }
+```
+
+  - A Decorator is a special kind of declaration that can be attached to a class declaration, method, accessor, property, or parameter. Decorators use the form @expression, where expression must evaluate to a function that will be called at runtime with information about the decorated declaration.
+  - For example, given the decorator @sealed we might write the sealed function as follows:
+```ts
+function sealed(target) {
+  // do something with 'target' ...
+}
+```
+
+  - Decorator Factories
+    - If we want to customize how a decorator is applied to a declaration, we can write a decorator factory. A Decorator Factory is simply a function that returns the expression that will be called by the decorator at runtime.
+```ts
+function color(value: string) {
+  // this is the decorator factory, it sets up
+  // the returned decorator function
+  return function (target) {
+    // this is the decorator
+    // do something with 'target' and 'value'...
+  };
+}
+```
+
+  - Decorator Composition
+  - Multiple decorators can be applied to a declaration, for example on a single line:
+```ts
+@f @g x
+
+@f
+@g
+x
+```
+    - When multiple decorators apply to a single declaration, their evaluation is similar to function composition in mathematics. In this model, when composing functions f and g, the resulting composite (f ∘ g)(x) is equivalent to f(g(x)).
+    - As such, the following steps are performed when evaluating multiple decorators on a single declaration in TypeScript:
+      - The expressions for each decorator are evaluated top-to-bottom.
+      - The results are then called as functions from bottom-to-top.
+```ts
+function first() {
+  console.log("first(): factory evaluated");
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    console.log("first(): called");
+  };
+}
+ 
+function second() {
+  console.log("second(): factory evaluated");
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    console.log("second(): called");
+  };
+}
+ 
+class ExampleClass {
+  @first()
+  @second()
+  method() {}
+}
+```
+```sh
+first(): factory evaluated
+second(): factory evaluated
+second(): called
+first(): called
+```
+  - Decorator Evaluation
+    - There is a well defined order to how decorators applied to various declarations inside of a class are applied:
+      - Parameter Decorators, followed by Method, Accessor, or Property Decorators are applied for each instance member.
+      - Parameter Decorators, followed by Method, Accessor, or Property Decorators are applied for each static member.
+      - Parameter Decorators are applied for the constructor.
+      - Class Decorators are applied for the class.
+
+  - Class Decorators
+    - A Class Decorator is declared just before a class declaration. The class decorator is applied to the constructor of the class and can be used to observe, modify, or replace a class definition. A class decorator cannot be used in a declaration file, or in any other ambient context (such as on a declare class).
+```ts
+  @sealed
+class BugReport {
+  type = "report";
+  title: string;
+ 
+  constructor(t: string) {
+    this.title = t;
+  }
+}
+
+function sealed(constructor: Function) {
+  Object.seal(constructor);
+  Object.seal(constructor.prototype);
+}
+```
+- When @sealed is executed, it will seal both the constructor and its prototype, and will therefore prevent any further functionality from being added to or removed from this class during runtime by accessing BugReport.prototype or by defining properties on BugReport itself (note that ES2015 classes are really just syntactic sugar to prototype-based constructor functions). This decorator does not prevent classes from sub-classing BugReport.
+
+  - Method Decorators
+    - A Method Decorator is declared just before a method declaration. The decorator is applied to the Property Descriptor for the method, and can be used to observe, modify, or replace a method definition. A method decorator cannot be used in a declaration file, on an overload, or in any other ambient context (such as in a declare class).
+```ts
+class Greeter {
+  greeting: string;
+  constructor(message: string) {
+    this.greeting = message;
+  }
+ 
+  @enumerable(false)
+  greet() {
+    return "Hello, " + this.greeting;
+  }
+}
+
+function enumerable(value: boolean) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    descriptor.enumerable = value;
+  };
+}
+```
+
+- Decorator Factories
+  - Since decorators are functions, we might need to pass in some additional options so as to customize how the decorator works. To do this, we make use of Decorator Factories. A Decorator Factory is simply a function that returns a function. This returned function would then implement the decorator.
+```ts
+const decoratorFactory = (value: string) => {
+  // the decorator factory returns a decorator function
+ 
+  return (target: any) => {
+    // the returned decorator uses 'target' and 'value'
+  }
+}
+```
+
+- Class Decorators
+  - A Class Decorator is used to decorate a class declaration. The class decorator receives the constructor of the class as its only argument. The decorator can be used to observe, modify, or replace a class definition.
+```ts
+const classDecorator = (constructor: Function) => {
+  // do something with your class
+}
+
+@classDecorator
+class Person {}
+```
