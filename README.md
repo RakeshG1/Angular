@@ -975,3 +975,398 @@ const classDecorator = (constructor: Function) => {
 @classDecorator
 class Person {}
 ```
+
+## Decorators using Node project
+  - Not as just typescript files
+
+- https://blog.logrocket.com/practical-guide-typescript-decorators/
+
+- **Setup**
+```sh
+$ mkdir simple-typescript-decorators-examples
+$ cd simple-typescript-decorators-examples
+$ npm init -y
+
+# Wrote to /Users/rock/Git_Repo/Angular/simple-typescript-decorators-examples/package.json:
+
+# {
+#   "name": "simple-typescript-decorators-examples",
+#   "version": "1.0.0",
+#   "description": "",
+#   "main": "index.js",
+#   "scripts": {
+#     "test": "echo \"Error: no test specified\" && exit 1"
+#   },
+#   "keywords": [],
+#   "author": "",
+#   "license": "ISC"
+# }
+
+# Next, install TypeScript as a development dependency
+$ npm install -D typescript @types/node
+# added 3 packages, and audited 4 packages in 1m
+# found 0 vulnerabilities
+```
+- The @types/node package contains the Node.js type definitions for TypeScript. We need this package to access some Node.js standard libraries.
+- Add an npm script in the package.json file to compile your TypeScript code:
+```json
+{
+  // ...
+  "scripts": {
+    "build": "tsc"
+  }
+}
+```
+```sh
+#Before
+(base) rocks-MacBook-Air:simple-typescript-decorators-examples rock$ cat package.json 
+{
+  "name": "simple-typescript-decorators-examples",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.8.9",
+    "typescript": "^5.2.2"
+  }
+}
+
+#After adding compiling as tsc in scripts section
+(base) rocks-MacBook-Air:simple-typescript-decorators-examples rock$ cat package.json 
+{
+  "name": "simple-typescript-decorators-examples",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.8.9",
+    "typescript": "^5.2.2"
+  }
+}
+```
+- Until TypeScript 5.0, we had to explicitly set a flag, experimentalDecorators, to use decorators in our code. With TypeScript 5.0, this is no longer the case. While such a flag is likely to stay around for the foreseeable future, we can use new-style decorators without it. As a matter of fact, the old-style decorators modeled a different version of the proposal (Stage 2). We can use both styles in our code because the type rules are different, but it’s not advisable to do so.
+- Remember to configure your working environment to use at least TypeScript 5. Otherwise, the code in this article won’t compile.
+- We’ll use ES6 as a target for TypeScript because it’s supported by all modern browsers:
+```sh
+# Checking typescript version
+(base) rocks-MacBook-Air:simple-typescript-decorators-examples rock$ tsc --version
+Version 5.2.2
+```
+```json
+{
+  "compilerOptions": {
+    "target": "ES6"
+  }
+}
+```
+```sh
+# Added "target": "ES6"
+(base) rocks-MacBook-Air:simple-typescript-decorators-examples rock$ cat package.json 
+{
+  "name": "simple-typescript-decorators-examples",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.8.9",
+    "typescript": "^5.2.2"
+  },
+  "compilerOptions": {
+    "target": "ES6"
+  }
+}
+```
+- Next, we’ll create a simple TypeScript file to test the project out:
+```sh
+// console.log("Hello, world!");
+
+$ npm run build
+$ node hello_world.js
+// Hello, world!
+```
+```sh
+(base) rocks-MacBook-Air:simple-typescript-decorators-examples rock$ npm run build
+
+> simple-typescript-decorators-examples@1.0.0 build
+> tsc
+
+Version 5.2.2
+tsc: The TypeScript Compiler - Version 5.2.2 
+
+(base) rocks-MacBook-Air:simple-typescript-decorators-examples rock$ node hello_world.js 
+Hello, world!
+```
+- Instead of repeating this command over and over, we can simplify the compilation and execution process by using a package called ts-node. It’s a community package that enables us to run TypeScript code directly without compiling it first.
+- Let’s install it as a development dependency:
+```sh
+(base) rocks-MacBook-Air:simple-typescript-decorators-examples rock$ npm install -D ts-node
+
+added 17 packages, and audited 21 packages in 6s
+
+found 0 vulnerabilities
+```
+- Next, add a start script to the package.json file:
+- Create typescript file -> hello_world.ts
+```json
+{
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node hello_world.ts"
+  }
+}
+```
+```sh
+(base) rocks-MacBook-Air:simple-typescript-decorators-examples rock$ cat package.json 
+{
+  "name": "simple-typescript-decorators-examples",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "ts-node hello_world.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.8.9",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "compilerOptions": {
+    "target": "ES6"
+  
+```
+- Simply run npm start to run your code:
+```sh
+(base) rocks-MacBook-Air:simple-typescript-decorators-examples rock$ npm start
+
+# > simple-typescript-decorators-examples@1.0.0 start
+# > ts-node hello_world.ts
+
+# Hello, world!
+```
+
+- **New TypeScript decorators**
+
+- In TypeScript, decorators are functions that can be attached to classes and their members, such as methods and properties.
+- In this section, we’re going to look at new-style decorators. First, the new Decorator type is defined as follows:
+```ts
+type Decorator = (target: Input, context: {
+  kind: string;
+  name: string | symbol;
+  access: {
+    get?(): unknown;
+    set?(value: unknown): void;
+  };
+  private?: boolean;
+  static?: boolean;
+  addInitializer?(initializer: () => void): void;
+}) => Output | void;
+```
+```text
+The type definition above looks complex, so let’s break it down one piece at a time:
+
+target represents the element we’re decorating, whose type is Input
+context contains metadata about how the decorated method was declared, namely:
+kind: the type of decorated value. As we’ll see, this can be either class, method, getter, setter, field, or accessor
+name: the name of the decorated object
+access: an object with references to a getter and setter method to access the decorated object
+private: whether the decorated object is a private class member
+static: whether the decorated object is a static class member
+addInitializer: a way to add custom initialization logic at the beginning of the constructor (or when the class is defined)
+Output represents the type of value returned by the Decorator function
+```
+
+- **Types of decorators**
+
+- `Class decorators`
+  - When you attach a function to a class as a decorator, you’ll receive the class constructor as the first parameter:
+```ts
+// function AnimalDetails(target: typeof Animal, context): typeof Animal {
+    function AnimalDetails(target: typeof Animal, context){    
+    if (context.kind === "class") {
+        target.prototype.name = "Tiger"
+        // target.prototype.isEmpty = (): boolean => {
+        // return this.name == "Cheetah"
+        // }
+    }
+    return this.name 
+}
+
+@AnimalDetails
+class Animal {
+    name: String;
+}
+
+const anm = new Animal()
+console.log((anm as any).name)
+// console.log(`Is the animal empty? ${(anm as any).isEmpty()}`)
+```
+```sh
+(base) rocks-MacBook-Air:src rock$ tsc Decorator_Class_Example.ts
+(base) rocks-MacBook-Air:src rock$ node Decorator_Class_Example.js
+Tiger
+```
+
+- `Method decorators`
+- Another good place to attach a decorator is class methods. In this case, the type of the decorator function is as follows:
+- https://medium.com/@InspireTech/what-are-decorators-in-typescript-and-how-to-use-decorators-d82d15c5851f
+
+```ts
+function simpleMethodDecorator(originalMethod: any, _context: any) {
+    return function(this: any, ...args: any[]) {
+        const message = args[0] + "Method Decorator :-)"
+        // console.log(originalMethod.name);
+        console.log(_context);
+        console.log(message);
+        console.log(`Step: 1 --> Decorating method`);
+        // originalMethod.call(this.message, ...args);
+        originalMethod.call(this, message);
+    }
+}
+
+class ExampleClass {
+    @simpleMethodDecorator
+    someMethod(message: string) {
+        console.log("Step: 2 --> Executing someMethod --> "+message);
+    }
+}
+
+const example = new ExampleClass();
+example.someMethod("Hello!!");
+```
+```sh
+(base) rocks-MacBook-Air:src rock$ tsc Decorator_Value_Check_Example.ts 
+(base) rocks-MacBook-Air:src rock$ node Decorator_Value_Check_Example.js
+{
+  kind: 'method',
+  name: 'someMethod',
+  static: false,
+  private: false,
+  access: { has: [Function: has], get: [Function: get] },
+  metadata: undefined,
+  addInitializer: [Function (anonymous)]
+}
+Hello!!Method Decorator :-)
+Step: 1 --> Decorating method
+Step: 2 --> Executing someMethod --> Hello!!Method Decorator :-)
+```
+
+- `Accessor Decorators`
+  - An Accessor Decorator is declared just before an accessor declaration. The accessor decorator is applied to the Property Descriptor for the accessor and can be used to observe, modify, or replace an accessor’s definitions. An accessor decorator cannot be used in a declaration file, or in any other ambient context (such as in a declare class).
+```ts
+function simpleAccessorDecorator(originalMethod: any, _context: any) {
+    console.log(`Decorating accessor`);
+}
+
+class ExampleClass {
+    private _value: number = 0;
+
+    @simpleAccessorDecorator
+    get value(): number {
+        return this._value;
+    }
+
+    set value(newValue: number) {
+        this._value = newValue;
+    }
+}
+
+const example = new ExampleClass();
+example.value = 42; // This will trigger the accessor decorator for the 'value' property
+const currentValue = example.value; // This will trigger the accessor decorator for the 'value' property
+console.log(currentValue);
+```
+```sh
+(base) rocks-MacBook-Air:src rock$ tsc Decorator_Access_Example.ts 
+(base) rocks-MacBook-Air:src rock$ node Decorator_Access_Example.js
+Decorating accessor
+42
+```
+
+- `Property Decorators`
+  - A Property Decorator is declared just before a property declaration. A property decorator cannot be used in a declaration file, or in any other ambient context (such as in a declare class).
+```ts
+```
+```sh
+```
+- Note : Throws error
+
+
+- `Parameter Decorators`
+  - A Parameter Decorator is declared just before a parameter declaration. The parameter decorator is applied to the function for a class constructor or method declaration. A parameter decorator cannot be used in a declaration file, an overload, or in any other ambient context (such as in a declare class).
+```ts
+function simpleParameterDecorator(originalMethod: any, _context: any) {
+    return function(this: any, ...args: any[]) {
+    // console.log(`Decorating parameter ${parameterIndex} of ${propertyKey} in ${target}`);
+    const param1 = args[0] 
+    const param2 = args[1] 
+    console.log(originalMethod.name);
+    console.log(_context);
+    console.log(param1);
+    console.log(param2);
+    console.log(`Step: 1 --> Decorating method`);
+    // originalMethod.call(this, param1);
+    originalMethod.call(this, param1, param2);
+    }
+}
+
+class ExampleClass {
+    @simpleParameterDecorator
+    someMethod(param1: string, param2: number) {
+        console.log("Step: 2 --> Executing someMethod");
+    }
+}
+
+const example = new ExampleClass();
+example.someMethod("example", 42);
+```
+```sh
+(base) rocks-MacBook-Air:src rock$ tsc Decorator_Parameter_Example.ts 
+(base) rocks-MacBook-Air:src rock$ node Decorator_Parameter_Example.js
+
+{
+  kind: 'method',
+  name: 'someMethod',
+  static: false,
+  private: false,
+  access: { has: [Function: has], get: [Function: get] },
+  metadata: undefined,
+  addInitializer: [Function (anonymous)]
+}
+example
+42
+Step: 1 --> Decorating method
+Step: 2 --> Executing someMethod
+```
+
+- `Metadata`
+Some examples use the reflect-metadata library which adds a polyfill for an experimental metadata API. This library is not yet part of the ECMAScript (JavaScript) standard. However, once decorators are officially adopted as part of the ECMAScript standard these extensions will be proposed for adoption.
+```ts
+```
+```sh
+```
+- Note : complex to understand
